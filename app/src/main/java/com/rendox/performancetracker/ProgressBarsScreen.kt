@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -45,7 +46,6 @@ fun ProgressBarsScreen() {
     var dialogTitle by rememberSaveable { (mutableStateOf("")) }
 
     val viewModel = viewModel<MainViewModel>()
-    val routineList = viewModel.routineList
 
     if (dialogShown) {
         val dialogState = rememberRoutineDialogState()
@@ -109,13 +109,14 @@ fun ProgressBarsScreen() {
             }
         }
     ) { paddingValues ->
+        val routineList = viewModel.routineList.collectAsState()
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             contentPadding = paddingValues,
         ) {
-            items(routineList) { routine ->
+            items(routineList.value) { routine ->
                 ProgressBarComponent(
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
                     title = routine.title,

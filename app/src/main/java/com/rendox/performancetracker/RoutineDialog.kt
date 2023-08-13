@@ -40,21 +40,33 @@ class RoutineDialogState(
     var isProgressWrong by mutableStateOf(isProgressWrong)
         private set
 
-    fun updateName(name: String) {
-        isNameWrong = name == ""
-        routineName = name
-    }
-
-    fun updateProgress(progress: String) {
+    private fun checkProgress(progress: String) {
         isProgressWrong = try {
             ((progress == "") || progress.toInt() !in 0..100)
         } catch (ex: NumberFormatException) {
             true
         }
-        routineProgress = progress
     }
 
-    fun availableForSaving() = !isNameWrong && !isProgressWrong
+    private fun checkName(name: String) {
+        isNameWrong = name == ""
+    }
+
+    fun updateName(name: String) {
+        routineName = name
+        checkName(routineName)
+    }
+
+    fun updateProgress(progress: String) {
+        routineProgress = progress
+        checkProgress(routineProgress)
+    }
+
+    fun availableForSaving(): Boolean {
+        checkName(routineName)
+        checkProgress(routineProgress)
+        return !isNameWrong && !isProgressWrong
+    }
 
     companion object {
         val Saver: Saver<RoutineDialogState, *> = listSaver(

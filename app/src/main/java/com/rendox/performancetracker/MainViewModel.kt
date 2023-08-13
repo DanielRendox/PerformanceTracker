@@ -1,16 +1,15 @@
 package com.rendox.performancetracker
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 
-class MainViewModel: ViewModel() {
+class MainViewModel : ViewModel() {
     // TODO replace with database value
-    // TODO replace with StateFlow
-    private val _routineList = mutableStateListOf<Routine>()
+    private var _routineList = MutableStateFlow(emptyList<Routine>())
     val routineList
         get() = _routineList
 
     fun addRoutine(routine: Routine) {
-        _routineList.add(routine)
+        _routineList.value += routine
     }
 }

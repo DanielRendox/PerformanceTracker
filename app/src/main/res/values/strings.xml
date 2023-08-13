@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Performance Tracker</string>
+
+    <!-- ProgressBarsScreen -->
+    <string name="progress_bars_screen_name">Routines Progress</string>
+    <string name="progress_bars_dialog_title_add_routine">Add routine</string>
+    <string name="progress_bars_dialog_title_edit_routine">Edit routine</string>
+    <string name="progress_bars_dialog_text_field_name_placeholder">Name your routine</string>
+    <string name="progress_bars_dialog_name_text_field_label">Name</string>
+    <string name="progress_bars_dialog_progress_text_field_suffix">/100</string>
+    <string name="progress_bars_dialog_progress_text_field_label">Progress</string>
+    <string name="progress_bars_fab_icon_description">Add a routine</string>
+    <string name="progress_bars_wrong_progress_error_description">Progress value is not valid</string>
+    <string name="progress_bars_wrong_name_error_description">Name is empty</string>
+    <string name="progress_bars_routine_progress_text">%d %</string>
+
+    <string name="confirm">Confirm</string>
+
+</resources>

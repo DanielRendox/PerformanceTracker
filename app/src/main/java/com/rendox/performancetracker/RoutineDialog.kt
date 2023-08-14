@@ -26,11 +26,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
 class RoutineDialogState(
+    dialogShown: Boolean = false,
     routineName: String = "",
     routineProgress: String = "",
     isNameWrong: Boolean = false,
     isProgressWrong: Boolean = false,
 ) {
+    var dialogType by mutableStateOf(DialogType.Add)
+        private set
+    var dialogShown by mutableStateOf(dialogShown)
+        private set
     var routineName by mutableStateOf(routineName)
         private set
     var routineProgress by mutableStateOf(routineProgress)
@@ -39,6 +44,33 @@ class RoutineDialogState(
         private set
     var isProgressWrong by mutableStateOf(isProgressWrong)
         private set
+    var routineIndex by mutableStateOf(-1)
+        private set
+
+    fun showAddDialog() {
+        dialogType = DialogType.Add
+        dialogShown = true
+    }
+
+    fun showEditDialog(
+        routineName: String,
+        routineProgress: String,
+        routineIndex: Int,
+    ) {
+        dialogType = DialogType.Edit
+        this.routineName = routineName
+        this.routineProgress = routineProgress
+        this.routineIndex = routineIndex
+        dialogShown = true
+    }
+
+    fun closeDialog() {
+        routineName = ""
+        routineProgress = ""
+        isNameWrong = false
+        isProgressWrong = false
+        dialogShown = false
+    }
 
     private fun checkProgress(progress: String) {
         isProgressWrong = try {
@@ -76,6 +108,7 @@ class RoutineDialogState(
                     it.routineProgress,
                     it.isNameWrong,
                     it.isProgressWrong,
+                    it.dialogShown,
                 )
             },
             restore = {
@@ -84,10 +117,16 @@ class RoutineDialogState(
                     routineProgress = it[1] as String,
                     isNameWrong = it[2] as Boolean,
                     isProgressWrong = it[3] as Boolean,
+                    dialogShown = it[4] as Boolean
                 )
             }
         )
     }
+}
+
+enum class DialogType {
+    Add,
+    Edit;
 }
 
 

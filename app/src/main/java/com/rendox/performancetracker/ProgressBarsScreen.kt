@@ -9,25 +9,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
@@ -42,16 +39,16 @@ import kotlin.math.roundToInt
 @Composable
 fun ProgressBarsScreen() {
 
-    var dialogShown by rememberSaveable { mutableStateOf(false) }
-    var dialogTitle by rememberSaveable { (mutableStateOf("")) }
-
+    val dialogState = rememberRoutineDialogState()
     val viewModel = viewModel<MainViewModel>()
 
-    if (dialogShown) {
-        val dialogState = rememberRoutineDialogState()
-        AlertDialog(onDismissRequest = { dialogShown = false }) {
+    if (dialogState.dialogShown) {
+        AlertDialog(onDismissRequest = { dialogState.closeDialog() }) {
             RoutineDialogContent(
-                title = dialogTitle,
+                title = when (dialogState.dialogType) {
+                    DialogType.Add -> stringResource(R.string.progress_bars_dialog_title_add_routine)
+                    DialogType.Edit -> stringResource(R.string.progress_bars_dialog_title_edit_routine)
+                },
                 routineName = dialogState.routineName,
                 routineProgress = dialogState.routineProgress,
                 onNameChange = {
@@ -61,17 +58,34 @@ fun ProgressBarsScreen() {
                     dialogState.updateProgress(it)
                 },
                 dismissButtonOnClick = {
-                    dialogShown = false
+                    dialogState.closeDialog()
                 },
                 confirmButtonOnClick = {
                     if (dialogState.availableForSaving()) {
-                        dialogShown = false
-                        viewModel.addRoutine(
-                            Routine(
-                                title = dialogState.routineName,
-                                progress = (dialogState.routineProgress.toInt()) / 100f
-                            )
-                        )
+                        when (dialogState.dialogType) {
+                            DialogType.Add -> {
+                                viewModel.addRoutine(
+                                    Routine(
+                                        name = dialogState.routineName,
+                                        progress = Routine.convertProgressToFloat(
+                                            dialogState.routineProgress.toInt()
+                                        )
+                                    )
+                                )
+                            }
+                            DialogType.Edit -> {
+                                viewModel.editRoutine(
+                                    index = dialogState.routineIndex,
+                                    newValue = Routine(
+                                        name = dialogState.routineName,
+                                        progress = Routine.convertProgressToFloat(
+                                            dialogState.routineProgress.toInt()
+                                        )
+                                    )
+                                )
+                            }
+                        }
+                        dialogState.closeDialog()
                     }
                 },
                 isNameWrong = dialogState.isNameWrong,
@@ -97,10 +111,8 @@ fun ProgressBarsScreen() {
             }
         },
         floatingActionButton = {
-            val title = stringResource(R.string.progress_bars_dialog_title_add_routine)
             FloatingActionButton(onClick = {
-                dialogTitle = title
-                dialogShown = true
+                dialogState.showAddDialog()
             }) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -109,18 +121,25 @@ fun ProgressBarsScreen() {
             }
         }
     ) { paddingValues ->
-        val routineList = viewModel.routineList.collectAsState()
+        val routineListState = viewModel.routineList.collectAsState()
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             contentPadding = paddingValues,
         ) {
-            items(routineList.value) { routine ->
+            items(routineListState.value) { routine ->
                 ProgressBarComponent(
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
-                    title = routine.title,
+                    name = routine.name,
                     progress = routine.progress,
+                    editButtonOnClick = { name, progress ->
+                        dialogState.showEditDialog(
+                            routineName = name,
+                            routineProgress = Routine.convertProgressToInt(progress).toString(),
+                            routineIndex = routineListState.value.indexOf(routine)
+                        )
+                    }
                 )
             }
         }
@@ -130,23 +149,27 @@ fun ProgressBarsScreen() {
 @Composable
 fun ProgressBarComponent(
     modifier: Modifier,
-    title: String,
-    progress: Float
+    name: String,
+    progress: Float,
+    editButtonOnClick: (title: String, progress: Float) -> Unit,
 ) {
     Row(
         modifier,
-        verticalAlignment = Alignment.Bottom,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             modifier = Modifier
-                .width(160.dp)
-                .padding(end = 16.dp),
-            text = title,
+                .weight(2f)
+                .padding(end = 24.dp),
+            text = name,
             style = MaterialTheme.typography.titleLarge,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
-        Column(modifier = Modifier.padding(bottom = 8.dp)) {
+        Column(
+            modifier = Modifier
+                .weight(3f)
+        ) {
             val progressInt = (progress * 100).roundToInt()
             Text(
                 text = stringResource(R.string.progress_bars_routine_progress_text, progressInt),
@@ -155,12 +178,21 @@ fun ProgressBarComponent(
             LinearProgressIndicator(
                 progress = progress,
                 modifier = Modifier
-                    .padding(top = 4.dp)
-                    .fillMaxWidth(),
+                    .padding(top = 4.dp),
                 strokeCap = StrokeCap.Round,
             )
         }
-        // TODO add a "modify" IconButton
+        IconButton(
+            onClick = { editButtonOnClick(name, progress) },
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 24.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = stringResource(R.string.progress_bars_progress_component_edit_button_description),
+            )
+        }
     }
 }
 
@@ -181,7 +213,8 @@ fun ProgressBarsScreenPreview() {
 fun ProgressBarComponentPreview() {
     ProgressBarComponent(
         modifier = Modifier.padding(24.dp),
-        title = "Title",
-        progress = 0.4f
+        name = "Title",
+        progress = 0.4f,
+        editButtonOnClick = {_, _ -> }
     )
 }

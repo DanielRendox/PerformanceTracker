@@ -12,4 +12,10 @@ class MainViewModel : ViewModel() {
     fun addRoutine(routine: Routine) {
         _routineList.value += routine
     }
+
+    fun editRoutine(index: Int, newValue: Routine) {
+        _routineList.value = _routineList.value.toMutableList().also {
+            it[index] = newValue
+        }.toList()
+    }
 }

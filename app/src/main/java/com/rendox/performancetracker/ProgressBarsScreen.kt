@@ -14,8 +14,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProgressBarsScreen() {
 
@@ -43,55 +40,55 @@ fun ProgressBarsScreen() {
     val viewModel = viewModel<MainViewModel>()
 
     if (dialogState.dialogShown) {
-        AlertDialog(onDismissRequest = { dialogState.closeDialog() }) {
-            RoutineDialogContent(
-                title = when (dialogState.dialogType) {
-                    DialogType.Add -> stringResource(R.string.progress_bars_dialog_title_add_routine)
-                    DialogType.Edit -> stringResource(R.string.progress_bars_dialog_title_edit_routine)
-                },
-                routineName = dialogState.routineName,
-                routineProgress = dialogState.routineProgress,
-                onNameChange = {
-                    dialogState.updateName(it)
-                },
-                onProgressChange = {
-                    dialogState.updateProgress(it)
-                },
-                dismissButtonOnClick = {
-                    dialogState.closeDialog()
-                },
-                confirmButtonOnClick = {
-                    if (dialogState.availableForSaving()) {
-                        when (dialogState.dialogType) {
-                            DialogType.Add -> {
-                                viewModel.addRoutine(
-                                    Routine(
-                                        name = dialogState.routineName,
-                                        progress = Routine.convertProgressToFloat(
-                                            dialogState.routineProgress.toInt()
-                                        )
+        RoutineDialog(
+            onDismissRequest = { dialogState.closeDialog() },
+            title = when (dialogState.dialogType) {
+                DialogType.Add -> stringResource(R.string.progress_bars_dialog_title_add_routine)
+                DialogType.Edit -> stringResource(R.string.progress_bars_dialog_title_edit_routine)
+            },
+            routineName = dialogState.routineName,
+            routineProgress = dialogState.routineProgress,
+            onNameChange = {
+                dialogState.updateName(it)
+            },
+            onProgressChange = {
+                dialogState.updateProgress(it)
+            },
+            dismissButtonOnClick = {
+                dialogState.closeDialog()
+            },
+            confirmButtonOnClick = {
+                if (dialogState.availableForSaving()) {
+                    when (dialogState.dialogType) {
+                        DialogType.Add -> {
+                            viewModel.addRoutine(
+                                Routine(
+                                    name = dialogState.routineName,
+                                    progress = Routine.convertProgressToFloat(
+                                        dialogState.routineProgress.toInt()
                                     )
                                 )
-                            }
-                            DialogType.Edit -> {
-                                viewModel.editRoutine(
-                                    index = dialogState.routineIndex,
-                                    newValue = Routine(
-                                        name = dialogState.routineName,
-                                        progress = Routine.convertProgressToFloat(
-                                            dialogState.routineProgress.toInt()
-                                        )
-                                    )
-                                )
-                            }
+                            )
                         }
-                        dialogState.closeDialog()
+
+                        DialogType.Edit -> {
+                            viewModel.editRoutine(
+                                index = dialogState.routineIndex,
+                                newValue = Routine(
+                                    name = dialogState.routineName,
+                                    progress = Routine.convertProgressToFloat(
+                                        dialogState.routineProgress.toInt()
+                                    )
+                                )
+                            )
+                        }
                     }
-                },
-                isNameWrong = dialogState.isNameWrong,
-                isProgressWrong = dialogState.isProgressWrong,
-            )
-        }
+                    dialogState.closeDialog()
+                }
+            },
+            isNameWrong = dialogState.isNameWrong,
+            isProgressWrong = dialogState.isProgressWrong,
+        )
     }
 
     Scaffold(
@@ -215,6 +212,6 @@ fun ProgressBarComponentPreview() {
         modifier = Modifier.padding(24.dp),
         name = "Title",
         progress = 0.4f,
-        editButtonOnClick = {_, _ -> }
+        editButtonOnClick = { _, _ -> }
     )
 }

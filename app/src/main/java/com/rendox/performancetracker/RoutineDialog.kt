@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
@@ -127,7 +126,7 @@ class RoutineDialogState(
         private set
     var isProgressWrong by mutableStateOf(isProgressWrong)
         private set
-    var routineIndex by mutableIntStateOf(-1)
+    var routineIndex by mutableStateOf(-1)
         private set
 
     fun showAddDialog() {

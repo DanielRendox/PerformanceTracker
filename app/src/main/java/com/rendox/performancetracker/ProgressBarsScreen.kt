@@ -165,7 +165,7 @@ fun ProgressBarComponent(
         )
         Column(
             modifier = Modifier
-                .weight(3f)
+                .weight(4f)
         ) {
             val progressInt = (progress * 100).roundToInt()
             Text(
@@ -175,7 +175,8 @@ fun ProgressBarComponent(
             LinearProgressIndicator(
                 progress = progress,
                 modifier = Modifier
-                    .padding(top = 4.dp),
+                    .padding(top = 4.dp)
+                    .fillMaxWidth(),
                 strokeCap = StrokeCap.Round,
             )
         }
@@ -198,14 +199,16 @@ fun ProgressBarComponent(
     heightDp = 800,
     showBackground = true,
     showSystemUi = true,
-    backgroundColor = 0xFFFFFFFF,
 )
 @Composable
 fun ProgressBarsScreenPreview() {
     ProgressBarsScreen()
 }
 
-@Preview
+@Preview(
+    showBackground = true,
+    widthDp = 600,
+)
 @Composable
 fun ProgressBarComponentPreview() {
     ProgressBarComponent(

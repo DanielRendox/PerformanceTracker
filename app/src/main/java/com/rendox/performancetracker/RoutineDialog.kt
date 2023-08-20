@@ -40,6 +40,7 @@ fun RoutineDialog(
     confirmButtonOnClick: () -> Unit,
     isNameWrong: Boolean,
     isProgressWrong: Boolean,
+    confirmButtonEnabled: () -> Boolean,
 ) {
     AlertDialog(onDismissRequest = onDismissRequest){
         Surface(
@@ -97,7 +98,7 @@ fun RoutineDialog(
                     }
                     TextButton(
                         onClick = confirmButtonOnClick,
-                        enabled = !isNameWrong && !isProgressWrong
+                        enabled = confirmButtonEnabled()
                     ) {
                         Text(text = stringResource(R.string.confirm))
                     }
@@ -154,31 +155,31 @@ class RoutineDialogState(
         dialogShown = false
     }
 
-    private fun checkProgress(progress: String) {
+    private fun checkProgress() {
         isProgressWrong = try {
-            ((progress == "") || progress.toInt() !in 0..100)
+            ((routineProgress == "") || routineProgress.toInt() !in 0..100)
         } catch (ex: NumberFormatException) {
             true
         }
     }
 
-    private fun checkName(name: String) {
-        isNameWrong = name == ""
+    private fun checkName() {
+        isNameWrong = routineName == ""
     }
 
     fun updateName(name: String) {
         routineName = name
-        checkName(routineName)
+        checkName()
     }
 
     fun updateProgress(progress: String) {
         routineProgress = progress
-        checkProgress(routineProgress)
+        checkProgress()
     }
 
     fun availableForSaving(): Boolean {
-        checkName(routineName)
-        checkProgress(routineProgress)
+        checkName()
+        checkProgress()
         return !isNameWrong && !isProgressWrong
     }
 

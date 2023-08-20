@@ -88,6 +88,7 @@ fun ProgressBarsScreen() {
             },
             isNameWrong = dialogState.isNameWrong,
             isProgressWrong = dialogState.isProgressWrong,
+            confirmButtonEnabled = { !dialogState.isNameWrong && !dialogState.isProgressWrong }
         )
     }
 

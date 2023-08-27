@@ -12,7 +12,7 @@
     <string name="progress_bars_fab_icon_description">Add a routine</string>
     <string name="progress_bars_wrong_progress_error_description">Progress value is not valid</string>
     <string name="progress_bars_wrong_name_error_description">Name is empty</string>
-    <string name="progress_bars_routine_progress_text">%1$d %%</string>
+    <string name="progress_bars_routine_progress_text">%1$d%%</string>
     <string name="progress_bars_progress_component_edit_button_description">Edit routine</string>
 
     <string name="confirm">Confirm</string>

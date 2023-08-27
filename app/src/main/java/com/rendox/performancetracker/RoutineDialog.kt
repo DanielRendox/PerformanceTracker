@@ -22,6 +22,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
@@ -161,11 +164,13 @@ fun RoutineDialogContent(
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier
                     .padding(bottom = 16.dp)
-                    .align(Alignment.CenterHorizontally),
+                    .align(Alignment.CenterHorizontally)
+                    .semantics { heading() },
             )
             OutlinedTextField(
                 modifier = Modifier
-                    .padding(bottom = 4.dp),
+                    .padding(bottom = 4.dp)
+                    .semantics { testTag = "NameTextField" },
                 singleLine = true,
                 value = routineName,
                 onValueChange = onNameChange,
@@ -180,7 +185,8 @@ fun RoutineDialogContent(
             )
             OutlinedTextField(
                 modifier = Modifier
-                    .padding(bottom = 24.dp),
+                    .padding(bottom = 24.dp)
+                    .semantics { testTag = "ProgressTextField" },
                 singleLine = true,
                 value = routineProgress,
                 onValueChange = onProgressChange,
@@ -203,7 +209,8 @@ fun RoutineDialogContent(
                 }
                 TextButton(
                     onClick = confirmButtonOnClick,
-                    enabled = !isNameWrong && !isProgressWrong
+                    enabled = !isNameWrong && !isProgressWrong,
+                    modifier = Modifier
                 ) {
                     Text(text = stringResource(R.string.confirm))
                 }

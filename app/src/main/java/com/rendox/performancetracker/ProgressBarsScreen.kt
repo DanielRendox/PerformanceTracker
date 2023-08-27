@@ -159,7 +159,7 @@ fun ProgressBarComponent(
     ) {
         Text(
             modifier = Modifier
-                .weight(2f)
+                .weight(7f)
                 .padding(end = 24.dp),
             text = name,
             style = MaterialTheme.typography.titleLarge,
@@ -168,7 +168,7 @@ fun ProgressBarComponent(
         )
         Column(
             modifier = Modifier
-                .weight(3f)
+                .weight(8f)
         ) {
             val progressInt = (progress * 100).roundToInt()
             Text(
@@ -178,14 +178,15 @@ fun ProgressBarComponent(
             LinearProgressIndicator(
                 progress = progress,
                 modifier = Modifier
-                    .padding(top = 4.dp),
+                    .padding(top = 4.dp)
+                    .fillMaxWidth(),
                 strokeCap = StrokeCap.Round,
             )
         }
         IconButton(
             onClick = { editButtonOnClick(name, progress) },
             modifier = Modifier
-                .weight(1f)
+                .weight(3f)
                 .padding(start = 24.dp)
         ) {
             Icon(

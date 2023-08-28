@@ -15,12 +15,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.listSaver
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -108,113 +102,7 @@ fun RoutineDialog(
     }
 }
 
-class RoutineDialogState(
-    dialogShown: Boolean = false,
-    routineName: String = "",
-    routineProgress: String = "",
-    isNameWrong: Boolean = false,
-    isProgressWrong: Boolean = false,
-) {
-    var dialogType by mutableStateOf(DialogType.Add)
-        private set
-    var dialogShown by mutableStateOf(dialogShown)
-        private set
-    var routineName by mutableStateOf(routineName)
-        private set
-    var routineProgress by mutableStateOf(routineProgress)
-        private set
-    var isNameWrong by mutableStateOf(isNameWrong)
-        private set
-    var isProgressWrong by mutableStateOf(isProgressWrong)
-        private set
-    var routineIndex by mutableStateOf(-1)
-        private set
-
-    fun showAddDialog() {
-        dialogType = DialogType.Add
-        dialogShown = true
-    }
-
-    fun showEditDialog(
-        routineName: String,
-        routineProgress: String,
-        routineIndex: Int,
-    ) {
-        dialogType = DialogType.Edit
-        this.routineName = routineName
-        this.routineProgress = routineProgress
-        this.routineIndex = routineIndex
-        dialogShown = true
-    }
-
-    fun closeDialog() {
-        routineName = ""
-        routineProgress = ""
-        isNameWrong = false
-        isProgressWrong = false
-        dialogShown = false
-    }
-
-    private fun checkProgress() {
-        isProgressWrong = try {
-            ((routineProgress == "") || routineProgress.toInt() !in 0..100)
-        } catch (ex: NumberFormatException) {
-            true
-        }
-    }
-
-    private fun checkName() {
-        isNameWrong = routineName == ""
-    }
-
-    fun updateName(name: String) {
-        routineName = name
-        checkName()
-    }
-
-    fun updateProgress(progress: String) {
-        routineProgress = progress
-        checkProgress()
-    }
-
-    fun availableForSaving(): Boolean {
-        checkName()
-        checkProgress()
-        return !isNameWrong && !isProgressWrong
-    }
-
-    companion object {
-        val Saver: Saver<RoutineDialogState, *> = listSaver(
-            save = {
-                listOf(
-                    it.routineName,
-                    it.routineProgress,
-                    it.isNameWrong,
-                    it.isProgressWrong,
-                    it.dialogShown,
-                )
-            },
-            restore = {
-                RoutineDialogState(
-                    routineName = it[0] as String,
-                    routineProgress = it[1] as String,
-                    isNameWrong = it[2] as Boolean,
-                    isProgressWrong = it[3] as Boolean,
-                    dialogShown = it[4] as Boolean
-                )
-            }
-        )
-    }
-}
-
 enum class DialogType {
     Add,
     Edit;
 }
-
-
-@Composable
-fun rememberRoutineDialogState() =
-    rememberSaveable(saver = RoutineDialogState.Saver) {
-        RoutineDialogState()
-    }

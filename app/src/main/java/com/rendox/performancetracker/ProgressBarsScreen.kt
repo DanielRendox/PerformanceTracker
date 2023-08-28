@@ -1,5 +1,6 @@
 package com.rendox.performancetracker
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,10 +37,11 @@ import kotlin.math.roundToInt
 @Composable
 fun ProgressBarsScreen() {
 
-    val dialogState = rememberRoutineDialogState()
     val viewModel = viewModel<MainViewModel>()
+    val dialogState = viewModel.routineDialogState
 
     if (dialogState.dialogShown) {
+        Log.i("ProgressBarsScreen", "Recomposition: dialog shown!")
         RoutineDialog(
             onDismissRequest = { dialogState.closeDialog() },
             title = when (dialogState.dialogType) {
@@ -110,6 +112,7 @@ fun ProgressBarsScreen() {
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
+                Log.i("ProgressBarsScreen", "FAB clicked")
                 dialogState.showAddDialog()
             }) {
                 Icon(
@@ -133,9 +136,9 @@ fun ProgressBarsScreen() {
                     progress = routine.progress,
                     editButtonOnClick = { name, progress ->
                         dialogState.showEditDialog(
-                            routineName = name,
-                            routineProgress = Routine.convertProgressToInt(progress).toString(),
-                            routineIndex = routineListState.value.indexOf(routine)
+                            name = name,
+                            progress = Routine.convertProgressToInt(progress).toString(),
+                            index = routineListState.value.indexOf(routine)
                         )
                     }
                 )

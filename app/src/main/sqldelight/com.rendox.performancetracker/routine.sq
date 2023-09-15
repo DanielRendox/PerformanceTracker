@@ -1,0 +1,28 @@
+CREATE TABLE routine (
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    progress REAL NOT NULL
+);
+
+getAllRoutines:
+SELECT *
+FROM routine;
+
+insertRoutine:
+INSERT INTO routine
+VALUES (?, ?, ?);
+
+deleteRoutineById:
+DELETE FROM routine
+WHERE id = :id;
+
+updateRoutineName:
+UPDATE routine
+SET name = ?
+WHERE id = ?;
+
+updateRoutineProgress:
+UPDATE routine
+SET progress = ?
+WHERE id = ?;
+

@@ -1,4 +1,4 @@
-package com.rendox.performancetracker
+package com.rendox.performancetracker.feature_routine
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +27,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.rendox.performancetracker.R
 
 class RoutineDialogState(
     dialogShown: Boolean = false,
@@ -47,7 +48,7 @@ class RoutineDialogState(
         private set
     var isProgressWrong by mutableStateOf(isProgressWrong)
         private set
-    var routineIndex by mutableStateOf(-1)
+    var routineIndex by mutableStateOf<Long>(-1)
         private set
 
     fun showAddDialog() {
@@ -58,7 +59,7 @@ class RoutineDialogState(
     fun showEditDialog(
         routineName: String,
         routineProgress: String,
-        routineIndex: Int,
+        routineIndex: Long,
     ) {
         dialogType = DialogType.Edit
         this.routineName = routineName

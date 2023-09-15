@@ -1,4 +1,4 @@
-package com.rendox.performancetracker
+package com.rendox.performancetracker.feature_routine
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,15 +32,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.rendox.performancetracker.R
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProgressBarsScreen() {
+fun ProgressBarsScreen(
+    viewModel: RoutineViewModel = hiltViewModel()
+) {
 
     val dialogState = rememberRoutineDialogState()
-    val viewModel = viewModel<MainViewModel>()
 
     if (dialogState.dialogShown) {
         AlertDialog(onDismissRequest = { dialogState.closeDialog() }) {
@@ -64,23 +66,20 @@ fun ProgressBarsScreen() {
                     if (dialogState.availableForSaving()) {
                         when (dialogState.dialogType) {
                             DialogType.Add -> {
-                                viewModel.addRoutine(
-                                    Routine(
-                                        name = dialogState.routineName,
-                                        progress = Routine.convertProgressToFloat(
-                                            dialogState.routineProgress.toInt()
-                                        )
+                                viewModel.insertRoutine(
+                                    name = dialogState.routineName,
+                                    progress = convertProgressToDouble(
+                                        dialogState.routineProgress.toInt()
                                     )
                                 )
                             }
+
                             DialogType.Edit -> {
-                                viewModel.editRoutine(
-                                    index = dialogState.routineIndex,
-                                    newValue = Routine(
-                                        name = dialogState.routineName,
-                                        progress = Routine.convertProgressToFloat(
-                                            dialogState.routineProgress.toInt()
-                                        )
+                                viewModel.updateRoutineById(
+                                    id = dialogState.routineIndex,
+                                    name = dialogState.routineName,
+                                    progress = convertProgressToDouble(
+                                        dialogState.routineProgress.toInt()
                                     )
                                 )
                             }
@@ -121,23 +120,24 @@ fun ProgressBarsScreen() {
             }
         }
     ) { paddingValues ->
-        val routineListState = viewModel.routineList.collectAsState()
+        val routineListState = viewModel.routineList
+            .collectAsState(initial = emptyList())
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             contentPadding = paddingValues,
         ) {
-            items(routineListState.value) { routine ->
+            items(items = routineListState.value, key = { routine -> routine.id }) { routine ->
                 ProgressBarComponent(
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
                     name = routine.name,
-                    progress = routine.progress,
-                    editButtonOnClick = { name, progress ->
+                    progress = routine.progress.toFloat(),
+                    editButtonOnClick = {
                         dialogState.showEditDialog(
-                            routineName = name,
-                            routineProgress = Routine.convertProgressToInt(progress).toString(),
-                            routineIndex = routineListState.value.indexOf(routine)
+                            routineName = routine.name,
+                            routineProgress = convertProgressToInt(routine.progress).toString(),
+                            routineIndex = routine.id
                         )
                     }
                 )
@@ -151,7 +151,7 @@ fun ProgressBarComponent(
     modifier: Modifier,
     name: String,
     progress: Float,
-    editButtonOnClick: (title: String, progress: Float) -> Unit,
+    editButtonOnClick: () -> Unit,
 ) {
     Row(
         modifier,
@@ -184,7 +184,7 @@ fun ProgressBarComponent(
             )
         }
         IconButton(
-            onClick = { editButtonOnClick(name, progress) },
+            onClick = { editButtonOnClick() },
             modifier = Modifier
                 .weight(3f)
                 .padding(start = 24.dp)
@@ -216,6 +216,6 @@ fun ProgressBarComponentPreview() {
         modifier = Modifier.padding(24.dp),
         name = "Title",
         progress = 0.4f,
-        editButtonOnClick = {_, _ -> }
+        editButtonOnClick = {}
     )
 }

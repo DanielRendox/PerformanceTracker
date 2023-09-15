@@ -1,6 +1,7 @@
 package com.rendox.performancetracker
 
 import com.google.common.truth.Truth.assertThat
+import com.rendox.performancetracker.feature_routine.RoutineDialogState
 import org.junit.Test
 
 class RoutineDialogStateTest {
